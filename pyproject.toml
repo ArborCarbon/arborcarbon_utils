@@ -1,0 +1,74 @@
+[project]
+name = "arborcarbon_utils"
+version = "0.0.1"
+readme = "README.md"
+requires-python = ">=3.14"
+
+dependencies = [
+    "psycopg[binary]==3.3.2",
+    "python-dotenv==1.2.1",
+]
+
+[dependency-groups]
+dev = [
+    "boto3-stubs[s3]",
+    "mypy==1.19.0",
+    "pytest==9.0.1",
+    "ruff==0.14.13",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+target-version = "py314"
+
+[tool.ruff.lint]
+extend-select = [
+    "A", "B", "C", "D", "D204", "D213", "E", "F", "G", "I", "N", "Q", "S", "T", "W",
+    "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP",
+    "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF",
+    "SIM", "SLF", "TC", "TID", "TRY", "UP", "YTT",
+]
+extend-ignore = [
+    "ANN20",
+    "D212",
+    "INP001",
+]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/test_*.py" = ["ANN001", "D403", "ERA001", "FBT003", "PLR2004", "PT011", "S101", "SLF001", "T201"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+allow-magic-value-types = ["int"]
+max-args = 15
+max-branches = 20
+max-statements = 100
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
