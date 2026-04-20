@@ -5,15 +5,12 @@ import os
 from functools import cached_property
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-from arborcarbon_utils.common import singleton, truthy
+from arborcarbon_utils.common import truthy
 
 
 ##################################################################################################
 # Classes
 ##################################################################################################
-@singleton
 class BaseEnvVars:
     """
     Cached view of process environment variables with common ArborCarbon defaults.
@@ -104,9 +101,3 @@ class BaseEnvVars:
         ``os.environ``, call code under test, then restore a clean state.
         """
         self.__dict__.clear()
-
-
-##################################################################################################
-# Runtime commands
-##################################################################################################
-load_dotenv()

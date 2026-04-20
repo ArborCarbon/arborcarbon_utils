@@ -14,12 +14,18 @@ if TYPE_CHECKING:
 
     from mypy_boto3_s3.type_defs import ObjectTypeDef
 
+##################################################################################################
+# Types
+##################################################################################################
 # Recursive JSON type alias
 type JSON = dict[str, JSON] | list[JSON] | str | int | float | bool | None
 
 _S3_SCHEME = "s3"
 
 
+##################################################################################################
+# Classes
+##################################################################################################
 class FilePath:
     """
     Unified file path wrapper supporting local paths, S3 URIs, and GDAL virtual paths.

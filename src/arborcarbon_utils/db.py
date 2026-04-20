@@ -1,10 +1,10 @@
 """Base Postgres helpers shared across ArborCarbon services."""
 
 import contextlib
-import time
 import logging
+import time
 from enum import StrEnum
-from typing import Any, Literal, cast, overload, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal, cast, overload
 
 import psycopg
 from psycopg.rows import dict_row
