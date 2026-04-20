@@ -42,6 +42,11 @@ class BaseEnvVars:
     # Common environment variables
     ##############################################################################################
     @cached_property
+    def container_path(self) -> str:
+        """Filesystem root used by services when running inside their container."""
+        return self.env_var_get("CONTAINER_PATH", "/app")
+
+    @cached_property
     def db_url(self) -> str:
         """PostgreSQL connection URL."""
         return self.env_var_get("DATABASE_URL")
@@ -55,11 +60,6 @@ class BaseEnvVars:
     def is_dev(self) -> bool:
         """Whether the current runtime should use development-friendly defaults."""
         return truthy(self.env_var_get("IS_DEV", self.FALSE))
-
-    @cached_property
-    def container_path(self) -> str:
-        """Filesystem root used by services when running inside their container."""
-        return self.env_var_get("CONTAINER_PATH", "/app")
 
     @cached_property
     def log_file(self) -> str:
@@ -93,6 +93,9 @@ class BaseEnvVars:
             format="%(asctime)s [%(levelname)s] %(message)s",
         )
 
+    ##############################################################################################
+    # Private methods
+    ##############################################################################################
     def _clear_cache(self):
         """
         Clear all cached env-var values — **for testing only**.

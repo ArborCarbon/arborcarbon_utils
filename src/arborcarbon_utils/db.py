@@ -141,44 +141,6 @@ class BaseDatabase:
             time.sleep(final_delay)
         return psycopg.connect(self.dsn, connect_timeout=_CONNECT_TIMEOUT_S)
 
-    def _run_query(self, fnc: Callable[[Connection]]):
-        """Run a query callback with one retry for connection-level failures."""
-        retryable = (psycopg.OperationalError, psycopg.InterfaceError)
-
-        for attempt in range(2):
-            conn = self.connection
-            try:
-                result = fnc(conn)
-            except retryable:
-                with contextlib.suppress(*_CONNECTION_CLEANUP_ERRORS):
-                    conn.rollback()
-
-                if self._connection is not None:
-                    with contextlib.suppress(*_CONNECTION_CLEANUP_ERRORS):
-                        self._connection.close()
-                    self._connection = None
-
-                with contextlib.suppress(*_CONNECTION_CLEANUP_ERRORS):
-                    conn.close()
-
-                if attempt == 0:
-                    time.sleep(0.2)
-                    continue
-                raise
-            except BaseException:
-                with contextlib.suppress(*_CONNECTION_CLEANUP_ERRORS):
-                    conn.rollback()
-                raise
-            else:
-                conn.commit()
-                return result
-            finally:
-                if self._connection is None:
-                    with contextlib.suppress(*_CONNECTION_CLEANUP_ERRORS):
-                        conn.close()
-        error = "Unreachable: query retry loop exhausted"
-        raise RuntimeError(error)
-
     @overload
     def _execute(
         self,
@@ -275,3 +237,41 @@ class BaseDatabase:
                 return cur.fetchone()
 
         return self._run_query(_query)
+
+    def _run_query(self, fnc: Callable[[Connection]]):
+        """Run a query callback with one retry for connection-level failures."""
+        retryable = (psycopg.OperationalError, psycopg.InterfaceError)
+
+        for attempt in range(2):
+            conn = self.connection
+            try:
+                result = fnc(conn)
+            except retryable:
+                with contextlib.suppress(*_CONNECTION_CLEANUP_ERRORS):
+                    conn.rollback()
+
+                if self._connection is not None:
+                    with contextlib.suppress(*_CONNECTION_CLEANUP_ERRORS):
+                        self._connection.close()
+                    self._connection = None
+
+                with contextlib.suppress(*_CONNECTION_CLEANUP_ERRORS):
+                    conn.close()
+
+                if attempt == 0:
+                    time.sleep(0.2)
+                    continue
+                raise
+            except BaseException:
+                with contextlib.suppress(*_CONNECTION_CLEANUP_ERRORS):
+                    conn.rollback()
+                raise
+            else:
+                conn.commit()
+                return result
+            finally:
+                if self._connection is None:
+                    with contextlib.suppress(*_CONNECTION_CLEANUP_ERRORS):
+                        conn.close()
+        error = "Unreachable: query retry loop exhausted"
+        raise RuntimeError(error)

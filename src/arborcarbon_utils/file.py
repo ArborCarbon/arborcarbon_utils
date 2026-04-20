@@ -49,6 +49,9 @@ class FilePath:
 
     __slots__ = ("bucket", "file_object")
 
+    ##############################################################################################
+    # Constructors
+    ##############################################################################################
     def __init__(
         self,
         file_path: str | Path | FilePath,
@@ -98,8 +101,9 @@ class FilePath:
         fp.file_object = dict(obj)
         return fp
 
-    # ----------------------------- dunder methods ----------------------------- #
-
+    ##############################################################################################
+    # Built-in methods
+    ##############################################################################################
     def __add__(self, other: object) -> FilePath:
         """Concatenate a string suffix onto the file path."""
         fp = FilePath(self.file_path, bucket=self.bucket)
@@ -125,8 +129,9 @@ class FilePath:
         """Return the raw file path key."""
         return self.file_path
 
-    # ------------------------------ properties -------------------------------- #
-
+    ##############################################################################################
+    # Attributes
+    ##############################################################################################
     @property
     def as_path(self) -> Path:
         """Return a pathlib.Path for local operations."""
@@ -233,8 +238,9 @@ class FilePath:
         """S3 storage class from object metadata."""
         return self.file_object.get("StorageClass")
 
-    # ------------------------------ path methods ------------------------------ #
-
+    ##############################################################################################
+    # Path methods
+    ##############################################################################################
     def append(self, suffix: str, *, replace: bool = False) -> FilePath:
         """
         Append a string to the filename stem (before the extension).
@@ -300,9 +306,11 @@ class FilePath:
         return FilePath(self.file_path, bucket=bucket)
 
 
-# ---------------------------------------------------------------------------- #
-#                              module-level helpers                             #
-# ---------------------------------------------------------------------------- #
+##################################################################################################
+# Module level helpers
+##################################################################################################
+def _file_name_no_ext_full(filename: str) -> str:
+    return str(Path(filename).with_suffix(""))
 
 
 def file_dir_name(filename: str) -> str:
@@ -332,23 +340,14 @@ def file_name_append(filename: str, suffix: str) -> str:
     return path_join(directory, base) if directory else base
 
 
-def file_name_with_ext(filename: str) -> str:
-    """Return the base filename including extension."""
-    return Path(filename).name
-
-
 def file_name_no_ext(filename: str) -> str:
     """Return the base filename without extension."""
     return Path(filename).stem
 
 
-def _file_name_no_ext_full(filename: str) -> str:
-    return str(Path(filename).with_suffix(""))
-
-
-def path_join(*parts: str) -> str:
-    """Join path components using the OS separator."""
-    return os.path.join(*parts)  # noqa: PTH118
+def file_name_with_ext(filename: str) -> str:
+    """Return the base filename including extension."""
+    return Path(filename).name
 
 
 def json_read(text_read: TextIO) -> JSON:
@@ -415,3 +414,8 @@ def open_text_read(
         Open text file object.
     """
     return Path(filename).open(encoding=encoding, newline=newline)
+
+
+def path_join(*parts: str) -> str:
+    """Join path components using the OS separator."""
+    return os.path.join(*parts)  # noqa: PTH118
